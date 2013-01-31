@@ -42,6 +42,8 @@ def save_report(station, report):
 	local_file = open(file, 'w')
 	local_file.write(report)
 	local_file.close()
+	#with local_file as open(file, 'w'):
+		#local_file.write(
 
 #
 # load_report
