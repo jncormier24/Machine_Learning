@@ -55,26 +55,41 @@ def load_report( station ):
 	return local_file
 
 #
-# clean_report
-# takes in a report, separates the report into line by line strings, and cleans off the white-space
+# create_report
+# handles the report genereation
 #
-def clean_report( report ):
+def create_report( report ):
 	counter = 0
 	for line in report:
 		if( 0 == counter or 1 == counter or 4 == counter):
 			counter += 1
 			continue
 		else:
+			if( 3 == counter ):
+				name = clean( line[53:] )
+				print name+' name'
+				print '+----------+--------+--------+--------+----------+'
+			date = clean_date( line[0:6] )
+			max_temp = clean( line[6:14] )
+			min_temp = clean( line[14:22] )
+			print '| '+date+' |  '+max_temp+' |  '+min_temp+' |'
+			print '+----------+--------+--------+--------+----------+'
 			counter += 1
-			new_line = clean_date( line[0:6] )
-			print new_line 
 	report.close()
+
+#
+# clean
+# takes in a string and cleans off the white-space
+#
+def clean( name ):
+	name = name.strip(' \t\n\r')
+	return name
+
 
 #
 # clean_date
 # takes in an unformated date and formats it to mm/dd/yy
 #
-
 def clean_date( date ):
 	if len(date) != 6:
 		print 'Date has incorrect amount of numbers';
@@ -87,13 +102,11 @@ def clean_date( date ):
 		date = second+'-'+third+'-'+first
 	return date
 	
-
-
 report = get_report( station )
 print 'report gotten'
 save_report( station, report )
 print 'report saved'
 local_report = load_report( station )
 print 'local loaded'
-report = clean_report( local_report )
+report = create_report( local_report )
 
