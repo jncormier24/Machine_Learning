@@ -66,25 +66,35 @@ def create_report( report ):
 			continue
 		else:
 			if( 3 == counter ):
-				name = clean( line[53:] )
+				name = line[53:].strip( ' \t\n\r' )
 				print name+' name'
 				print '+----------+--------+--------+--------+----------+'
 			date = clean_date( line[0:6] )
-			max_temp = clean( line[6:14] )
-			min_temp = clean( line[14:22] )
-			print '| '+date+' |  '+max_temp+' |  '+min_temp+' |'
+			#max_temp = fix_temp( line[6:14].strip( ' \t\n\r' ) )
+			#min_temp = fix_temp( line[14:22].strip( ' \t\n\r' ) )
+			max_temp = line[6:14].strip( ' \t\n\r' )
+			min_temp = line[14:22].strip( ' \t\n\r ')
+			print '|'+date+'|'+max_temp+'|'+min_temp+'|'
 			print '+----------+--------+--------+--------+----------+'
 			counter += 1
 	report.close()
 
 #
-# clean
-# takes in a string and cleans off the white-space
+# fix_temp
+# takes in a temperature and formats correctly
 #
-def clean( name ):
-	name = name.strip(' \t\n\r')
-	return name
-
+def fix_temp( temp ):
+	x = 0
+	if( 'f' == temp_type or 'F' == temp_type or 'fehrenheit' == temp_type or 'Fehrenheit' == temp_type ):
+		while( temp[x] != ' ' ):
+			x += 1
+		temp = temp[0:x]+'.'+temp[x+1:]
+		return temp
+	elif( 'c' == temp_type or 'C' == temp_type or 'celcius' == temp_type or 'Celcius' == temp_type ):
+		while( temp[x] != ' ' ):
+			x += 1
+		temp = temp[0:x]+'.'+temp[x+1:]
+		return temp
 
 #
 # clean_date
