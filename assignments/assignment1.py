@@ -42,6 +42,8 @@ def save_report(station, report):
 	local_file = open(file, 'w')
 	local_file.write(report)
 	local_file.close()
+	#with local_file as open(file, 'w'):
+		#local_file.write(
 
 #
 # load_report
@@ -53,26 +55,51 @@ def load_report( station ):
 	return local_file
 
 #
-# clean_report
-# takes in a report, separates the report into line by line strings, and cleans off the white-space
+# create_report
+# handles the report genereation
 #
-def clean_report( report ):
+def create_report( report ):
 	counter = 0
 	for line in report:
 		if( 0 == counter or 1 == counter or 4 == counter):
 			counter += 1
 			continue
 		else:
+			if( 3 == counter ):
+				name = line[53:].strip( ' \t\n\r' )
+				print name+' name'
+				print '+----------+--------+--------+--------+----------+'
+			date = clean_date( line[0:6] )
+			#max_temp = fix_temp( line[6:14].strip( ' \t\n\r' ) )
+			#min_temp = fix_temp( line[14:22].strip( ' \t\n\r' ) )
+			max_temp = line[6:14].strip( ' \t\n\r' )
+			min_temp = line[14:22].strip( ' \t\n\r ')
+			print '|'+date+'|'+max_temp+'|'+min_temp+'|'
+			print '+----------+--------+--------+--------+----------+'
 			counter += 1
-			new_line = clean_date( line[0:6] )
-			print new_line 
 	report.close()
+
+#
+# fix_temp
+# takes in a temperature and formats correctly
+#
+def fix_temp( temp ):
+	x = 0
+	if( 'f' == temp_type or 'F' == temp_type or 'fehrenheit' == temp_type or 'Fehrenheit' == temp_type ):
+		while( temp[x] != ' ' ):
+			x += 1
+		temp = temp[0:x]+'.'+temp[x+1:]
+		return temp
+	elif( 'c' == temp_type or 'C' == temp_type or 'celcius' == temp_type or 'Celcius' == temp_type ):
+		while( temp[x] != ' ' ):
+			x += 1
+		temp = temp[0:x]+'.'+temp[x+1:]
+		return temp
 
 #
 # clean_date
 # takes in an unformated date and formats it to mm/dd/yy
 #
-
 def clean_date( date ):
 	if len(date) != 6:
 		print 'Date has incorrect amount of numbers';
@@ -85,13 +112,11 @@ def clean_date( date ):
 		date = second+'-'+third+'-'+first
 	return date
 	
-
-
 report = get_report( station )
 print 'report gotten'
 save_report( station, report )
 print 'report saved'
 local_report = load_report( station )
 print 'local loaded'
-report = clean_report( local_report )
+report = create_report( local_report )
 
