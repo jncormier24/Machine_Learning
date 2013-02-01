@@ -70,10 +70,10 @@ def create_report( report ):
 				print name+' name'
 				print '+----------+--------+--------+--------+----------+'
 			date = clean_date( line[0:6] )
-			#max_temp = fix_temp( line[6:14].strip( ' \t\n\r' ) )
-			#min_temp = fix_temp( line[14:22].strip( ' \t\n\r' ) )
-			max_temp = line[6:14].strip( ' \t\n\r' )
-			min_temp = line[14:22].strip( ' \t\n\r ')
+			max_temp = fix_temp( line[6:14].strip( ' \t\n\r' ) )
+			min_temp = fix_temp( line[14:22].strip( ' \t\n\r' ) )
+			#max_temp = line[6:14].strip( ' \t\n\r' )
+			#min_temp = line[14:22].strip( ' \t\n\r ')
 			print '|'+date+'|'+max_temp+'|'+min_temp+'|'
 			print '+----------+--------+--------+--------+----------+'
 			counter += 1
@@ -85,16 +85,23 @@ def create_report( report ):
 #
 def fix_temp( temp ):
 	x = 0
+	y = '.'
+	for var in temp:
+		if( ' ' == var ):
+			var = y
+			temp = temp[0:x] + var + temp[x+1]
+			return temp
+		x += 1
+
+#
+# convert_temp
+# takes in a temperature and converts it to fehrenheit from celius (if needed)
+#
+def convert_temp( temp ):
 	if( 'f' == temp_type or 'F' == temp_type or 'fehrenheit' == temp_type or 'Fehrenheit' == temp_type ):
-		while( temp[x] != ' ' ):
-			x += 1
-		temp = temp[0:x]+'.'+temp[x+1:]
-		return temp
-	elif( 'c' == temp_type or 'C' == temp_type or 'celcius' == temp_type or 'Celcius' == temp_type ):
-		while( temp[x] != ' ' ):
-			x += 1
-		temp = temp[0:x]+'.'+temp[x+1:]
-		return temp
+		pass
+	if( 'c' == temp_type or 'C' == temp_type or 'celcius' == temp_type or 'Celcius' == temp_type ):
+		pass
 
 #
 # clean_date
@@ -119,4 +126,3 @@ print 'report saved'
 local_report = load_report( station )
 print 'local loaded'
 report = create_report( local_report )
-
