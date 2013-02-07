@@ -69,14 +69,15 @@ def create_report( report ):
 			if( 3 == counter ):
 				#get the location
 				name = line[53:].strip( ' \t\n\r' )
-				report.write( name+' name\n' )
+				#report.write( name+' name\n' )
+				print  name+' name\n' 
 			if( 5 < counter ):
 				#print dates and other fun stuff
 				date = clean_date( line[0:6] )
 				max_temp = fix_temp( line[6:14].strip( ' \t\n\r' ) )
 				min_temp = fix_temp( line[14:22].strip( ' \t\n\r' ) )
-				report.write( '|'+date+'|'+str( max_temp )+'|'+str( min_temp )+'|\n' )
-			report.write( '+----------+--------+--------+--------+----------+\n' )
+				print '|'+date+'|'+str( max_temp )+'|'+str( min_temp )+'|\n' 
+			print '+----------+--------+--------+--------+----------+\n' 
 			counter += 1
 	report.close()
 
@@ -131,4 +132,6 @@ print 'report saved'
 local_report = load_report( station )
 print 'local loaded'
 report = create_report( local_report )
-save_report( station+'new', report )
+#print 'saving...'
+#station = station+'new'
+#save_report( station , report )
