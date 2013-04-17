@@ -38,16 +38,14 @@ while( 1 ):
 			movie = line[1]
 			rating = line[2]
 			time = line[3]
-			user_entry = "( %r, %r, %r )" %(movie, rating, time)
-			movie_entry = "(%r, %r, %r )" %(user, rating, time)
 			if user in users:
-				users[user].append( user_entry )
-			elif user not in users:
-				users[user] = [ user_entry ]
+				users[ user ].update( { movie : rating } )
+			else:
+				users[ user ] = { movie : rating }
 			if movie in movies:
-				movies[movie].append( movie_entry )
-			elif movie not in movies:
-				movies[movie] = [ movie_entry ]
+				movies[ movie ].update( { user: rating } )
+			else:
+				movies[ movie ] = { user: rating }
 
 		data_set.close()
 
@@ -67,13 +65,8 @@ while( 1 ):
 			What user id would you like to Query?
 			"""
 			what_user = raw_input( '> ' )
-			#age, sex, job, zipcode = library.load_user( what_user )
-			#print "The user's age is: %r, they are: %r, they're job is: %r, and they live in: %r." %(age, sex, job, zipcode)
-			#for line in users:
-			#	print line
 			print "User %r has rated: \n" %( what_user)
-			for line in users[what_user]:
-				print line+"\n"
+			print users[ what_user ]
 
 		elif( '2' == user_input ):
 			print """
@@ -81,8 +74,7 @@ while( 1 ):
 			"""
 			what_movie = raw_input( '> ' )
 			print "Movie %r has ratings: \n" %( what_movie )
-			for line in movies[what_movie]:
-				print line+"\n"
+			print movies[ what_movie ]
 
 		elif( '3' == user_input ):
 			print 'Summary data'
@@ -99,10 +91,29 @@ while( 1 ):
 		What is the algorithm you would like to run?
 		(1) Euclidean,
 		(2) Pearson,
-		(3) Tanimoto,
+		(3) K Cluster,
+		(4) RMSE, 
 		Type 'none' to go back
 		"""
 		user_input = raw_input( '> ' )
+		
+		if( '1' == user_input ):
+			person1 = raw_input( "Please enter person 1: " )
+			person2 = raw_input( "Please enter person 2: " )
+			print "The euclidean score is: %r\n" % library.euclidean( users, person1, person2 )
+			
+		elif( '2' == user_input ):
+			person1 = raw_input( "Please enter person 1: " )
+			person2 = raw_input( "Please enter person 2: " )
+			print "The pearson score is: %r\n" % library.pearson( users, person1, person2 )
+		elif( '3' == user_input ):
+			matches = library.kcluster( movies )
+			for match in matches:
+				print match
+		elif( '4' == user_input ):
+			continue
+		else:
+			continue
 
 	else:
 		if( 'exit' == choice ):
