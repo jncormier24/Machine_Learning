@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import random
 from math import sqrt
+from math import fabs
 
 """
 Load dataset
@@ -108,13 +109,14 @@ def pearson_modified( p1, p2 ):
 	pSum = sum( [p1[it] * p2[it] for it in similar] )
 	
 	#calculate pearson score
-	num = pSum - ( [sum1 * sum2] / common )
+	num = pSum - ( (sum1 * sum2) / common )
 	den = sqrt( ( sum1Sq - pow( sum1, 2 ) / common ) * ( sum2Sq - pow( sum2, 2 ) / common ))
 	if den == 0:
 		return 0
 	
 	score = num / den
 	
+	print score
 	return score
 
 """
@@ -160,14 +162,15 @@ def euclidean_modified( p1, p2 ):
 	#Add up the squares of all the differences
 	sum_of_sq = sum( [pow( p1[item] - p2[item] , 2 ) for item in p1 if item in p2])
 	
-	return 1/( 1 + sum_of_sq )
+	score = 1/( 1 + sum_of_sq )
+	return score
 	
 """
 kcluster
-parameters: distance=pearson_modified, k=4
+parameters: distance=euclidean_modified, k=4
 returns: dictionary of clusters and list of centroids
 """
-def kcluster( movies, distance = pearson_modified, k = 4 ):
+def kcluster( movies, distance = euclidean_modified, k = 4 ):
 	ranges = 960
 	clusters = []
 	
@@ -176,22 +179,27 @@ def kcluster( movies, distance = pearson_modified, k = 4 ):
 		centroid = {}
 		for i in range( ranges ):
 			x = random.random() * 4.0 + 1
-			centroid.update( { str( i ) : x } )
+			l = str( i )
+			centroid.update( {  l : x } )
 		clusters.append( centroid )
-	
+
 	lastmatch = None
-	for t in range(100):
+	for t in range( 100 ):
 		print "Iteration %d " % t
 		bestmatches = [[] for i in range(k)]
 
 		#find which centroid is the closest for each thing
-		for j in range( ranges ):
+		bestmatch = 0
+		for j in range( 10 ):
 			try:
 				movie = movies[ str(j) ]
 				bestmatch = 0
 				for i in range(k):
-					d = distance( clusters[i], movie )
-					if( d < distance( clusters[bestmatch], movie ) ):bestmatch = i
+					d = fabs( distance( clusters[i], movie ) )
+					nd = fabs( distance( clusters[bestmatch], movie ) )
+					if( d < nd ):
+						bestmatch = i
+						#print "%f, %f" %(d, nd)	
 				bestmatches[bestmatch].append(j)
 			except KeyError:
 				continue
@@ -201,22 +209,25 @@ def kcluster( movies, distance = pearson_modified, k = 4 ):
 			break
 		lastmatch = bestmatches
 		
-		
+			
 		#Move the centroids to the average of their members
 		for i in range(k):
 			avgs = [0.0] * len( movies )
 			if 0 < len( bestmatches[i] ): 
-				for movie_id in bestmatches[i]:
+				"""for movie_id in bestmatches[i]:
 					for m in range( len( movies[ str(movie_id) ] ) ):
 						try:
-							avgs[m] += movies[movie_id][m]
+							avgs[m] += movies[movie_id]
 						except KeyError:
 							continue
 				for j in range(len(avgs)):
 					avgs[j] /= len(bestmatches[i])
 				clusters[i] = avgs
+			"""
+				print bestmatches[i]		
 	return bestmatches
-	
+						
+							
 	
 """
 always_guess_four

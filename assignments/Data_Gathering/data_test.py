@@ -36,7 +36,7 @@ while( 1 ):
 			line = string.split()
 			user = line[0]
 			movie = line[1]
-			rating = line[2]
+			rating = float( line[2] )
 			time = line[3]
 			if user in users:
 				users[ user ].update( { movie : rating } )
