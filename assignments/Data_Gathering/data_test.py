@@ -107,9 +107,9 @@ while( 1 ):
 			person2 = raw_input( "Please enter person 2: " )
 			print "The pearson score is: %r\n" % library.pearson( users, person1, person2 )
 		elif( '3' == user_input ):
-			matches = library.kcluster( movies )
-			for match in matches:
-				print match
+			matches = library.kcluster( users, movies )
+			library.print_movies( matches )
+
 		elif( '4' == user_input ):
 			continue
 		else:

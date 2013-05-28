@@ -170,12 +170,12 @@ kcluster
 parameters: distance=euclidean_modified, k=4
 returns: dictionary of clusters and list of centroids
 """
-def kcluster( movies, distance = euclidean_modified, k = 4 ):
+def kcluster( users, movies, k=10, distance = euclidean_modified ):
 	ranges = 960
 	clusters = []
 	
 	#create k randomly placed centroids
-	for j in range( k ):
+	for j in range(k):
 		centroid = {}
 		for i in range( ranges ):
 			x = random.random() * 4.0 + 1
@@ -190,7 +190,7 @@ def kcluster( movies, distance = euclidean_modified, k = 4 ):
 
 		#find which centroid is the closest for each thing
 		bestmatch = 0
-		for j in range( 10 ):
+		for j in range( ranges ):
 			try:
 				movie = movies[ str(j) ]
 				bestmatch = 0
@@ -199,7 +199,6 @@ def kcluster( movies, distance = euclidean_modified, k = 4 ):
 					nd = fabs( distance( clusters[bestmatch], movie ) )
 					if( d < nd ):
 						bestmatch = i
-						#print "%f, %f" %(d, nd)	
 				bestmatches[bestmatch].append(j)
 			except KeyError:
 				continue
@@ -208,27 +207,50 @@ def kcluster( movies, distance = euclidean_modified, k = 4 ):
 		if bestmatches == lastmatch:
 			break
 		lastmatch = bestmatches
-		
-			
+				
 		#Move the centroids to the average of their members
-		for i in range(k):
-			avgs = [0.0] * len( movies )
-			if 0 < len( bestmatches[i] ): 
-				"""for movie_id in bestmatches[i]:
-					for m in range( len( movies[ str(movie_id) ] ) ):
-						try:
-							avgs[m] += movies[movie_id]
-						except KeyError:
-							continue
-				for j in range(len(avgs)):
-					avgs[j] /= len(bestmatches[i])
-				clusters[i] = avgs
-			"""
-				print bestmatches[i]		
+		for i in range( k ):
+			avgs = [0.0] * len( users )
+			if 0 < len( bestmatches[i] ):
+				try:
+					for movie in bestmatches[i]:
+						for m in range(len(movies[movie])):
+							avgs[m] += movies[movie][m]
+					for j in range( len( avgs ) ):
+						avgs[j] /= len(bestmatches[i])
+					clusters[i] = avgs
+				except KeyError:
+					continue
+
 	return bestmatches
-						
-							
+
+"""
+print_movies
+parameters: movies
+prints movies to a file
+"""
+def print_movies( clusters ):
+	i = 0
+	movie_ids = {}
+	data = '../ml-100k/u.item' 
+	data = open( data, 'r' )
+	file = open( 'Movie_Data.txt', 'w' )
 	
+	for line in data:
+		line = line.split( '|' )
+		movie_id = line[0]
+		movie_name = line[1].split( '(' )
+		movie_ids.update( { movie_id : movie_name[0] } )
+	
+	for cluster in clusters:
+		for movie in cluster:
+			if movie in movie_ids:
+				
+	
+	
+	file.close()
+	data.close()
+
 """
 always_guess_four
 parameters: none
@@ -283,5 +305,4 @@ def calc_og( user, movie ):
 	guess = movie_avg + user_avg 
 	
 	return guess
-	
 	
